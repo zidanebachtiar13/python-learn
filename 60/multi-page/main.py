@@ -22,5 +22,9 @@ def post(id):
     post = requests.get('https://api.npoint.io/1533435fde6c79cbc9ca/' + id).json()
     return render_template('post.html', post=post)
 
+@app.route('/form-entry')
+def receive_data():
+    return
+
 if __name__ == '__main__':
     app.run(debug=True)
