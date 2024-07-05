@@ -1,6 +1,15 @@
 from flask import Flask, render_template, request
 import requests
+import smtplib
 
+account = open('account.txt', 'r')
+my_account = []
+
+for acc in account:
+    my_account.append(acc)
+
+email = my_account[0][:-1]
+password = my_account[1][:-1]
 
 app = Flask(__name__)
 
@@ -18,6 +27,18 @@ def contact():
     if request.method == 'GET':
         return render_template('contact.html', msg_sent=False)
     elif request.method == 'POST':
+        name = request.form['name']
+        mail = request.form['email']
+        phone = request.form['phone']
+        message = request.form['message']
+        with smtplib.SMTP('smtp.gmail.com') as connection:
+            connection.starttls()
+            connection.login(user=email, password=password)
+            connection.sendmail(
+                    from_addr=email,
+                    to_addrs=email,
+                    msg='Subject:Message From Your Blog\n\nName: ' + name + '\nEmail: ' + mail + '\nPhone: ' + phone + '\nMessage: ' + message
+                    )
         return render_template('contact.html', msg_sent=True)
 
 @app.route('/post/<id>')
