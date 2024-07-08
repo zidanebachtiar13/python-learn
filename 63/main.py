@@ -45,11 +45,25 @@ def add():
         return redirect(url_for('home'))
     return render_template('add.html')
 
-@app.route('/edit')
+@app.route('/edit', methods=['GET', 'POST'])
 def edit():
+    if request.method == 'POST':
+        id = request.form['id']
+        book = db.get_or_404(Book, id)
+        book.rating = request.form['rating']
+        db.session.commit()
+        return redirect(url_for('home'))
     id = request.args.get('id')
-    book = db.session.execute(db.select(Book).where(Book.id == id)).scalar()
+    book = db.get_or_404(Book, id)
     return render_template('edit.html', book=book)
+
+@app.route('/delete')
+def delete():
+    id = request.args.get('id')
+    book = db.get_or_404(Book, id)
+    db.session.delete(book)
+    db.session.commit()
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
     app.run(debug=True)
